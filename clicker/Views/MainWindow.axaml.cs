@@ -1,13 +1,16 @@
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-
+using SharpHook;
 namespace clicker.Views;
 
 public partial class MainWindow : Window
 {
   public MainWindow()
   {
+    var hook = new EventLoopGlobalHook();
+    hook.MousePressed += OnMousePressed;
+    hook.RunAsync();
     InitializeComponent();
   }
   private void Start_Click(object? sender, RoutedEventArgs e)
@@ -25,4 +28,10 @@ public partial class MainWindow : Window
     CorrespondingTextBox.Text = "Clicked!";
     Debug.WriteLine($"Corresponding text box: {textBox}");
   }
+
+  private void OnMousePressed(object? sender, MouseHookEventArgs e)
+  {
+    Debug.WriteLine($"{e.Data.X}, {e.Data.Y}");
+  }
+
 }
