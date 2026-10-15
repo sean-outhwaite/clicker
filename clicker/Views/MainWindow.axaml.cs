@@ -1,8 +1,9 @@
-using System.Diagnostics;
+using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using SharpHook;
+using SharpHook.Simulation;
 namespace clicker.Views;
 
 public partial class MainWindow : Window
@@ -13,9 +14,13 @@ public partial class MainWindow : Window
   {
     InitializeComponent();
   }
-  private void Start_Click(object? sender, RoutedEventArgs e)
+  private async void Start_Click(object? sender, RoutedEventArgs e)
   {
-    Debug.WriteLine("Click");
+    if (Click1Position.Text == null || Click2Position.Text == null) return;
+    var click1 = Array.ConvertAll(Click1Position.Text.Split(','), s => short.Parse(s));
+    var click2 = Array.ConvertAll(Click2Position.Text.Split(','), s => short.Parse(s));
+    var simulator = EventSimulator.Create("clicker");
+    simulator.SimulateMouseMovement(click1[0], click1[1]);
   }
 
   private void Get_Position(object? sender, RoutedEventArgs e)
@@ -36,10 +41,11 @@ public partial class MainWindow : Window
     if (_hook == null) return;
     _hook.MousePressed -= OnMousePressed;
     _hook.Dispose();
+    _hook = null;
 
     Dispatcher.UIThread.Post(() =>
   {
-    _pendingTarget.Text = $"{e.Data.X}, {e.Data.Y}";
+    _pendingTarget.Text = $"{e.Data.X},{e.Data.Y}";
   });
   }
 
