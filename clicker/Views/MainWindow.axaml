@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:clicker.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+        x:Class="clicker.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="clicker"
+        Width="400" Height="200">
+
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+    to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+  <StackPanel>
+    <Border Margin="5" CornerRadius="10" Background="LightBlue">
+      <TextBlock Margin="5" FontSize="24" HorizontalAlignment="Center" Text="Clicker"></TextBlock>
+    </Border>
+    <Grid ShowGridLines="True" Margin = "5"
+          ColumnDefinitions="120,100,200"
+          RowDefinitions="Auto, Auto">
+      <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">Click 1 Position</TextBlock>
+      <TextBox Grid.Row="0" Grid.Column="1" Margin="5" Text="0"/>
+      <Button Grid.Row="0" Grid.Column="2" Margin="5">Get Position</Button>
+      <TextBlock Grid.Row="1" Grid.Column="0" Margin="10">Click 2 Position</TextBlock>
+      <TextBox Grid.Row="1" Grid.Column="1" Margin="5" Text="0"/>
+      <Button Grid.Row="1" Grid.Column="2" Margin="5">Get Position</Button>
+    </Grid>
+    <Button HorizontalAlignment="Center">Start</Button>
+  </StackPanel>
+</Window>
