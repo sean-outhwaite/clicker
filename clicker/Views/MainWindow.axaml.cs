@@ -17,6 +17,12 @@ public partial class MainWindow : Window
 
   private void Get_Position(object? sender, RoutedEventArgs e)
   {
-    Debug.WriteLine("Click position");
+    var button = (sender as Button)?.Name;
+    var textBox = button?.Remove(0, 3);
+    if (textBox == null) return;
+    TextBox? CorrespondingTextBox = this.FindControl<TextBox>(textBox);
+    if (CorrespondingTextBox == null) return;
+    CorrespondingTextBox.Text = "Clicked!";
+    Debug.WriteLine($"Corresponding text box: {textBox}");
   }
 }
