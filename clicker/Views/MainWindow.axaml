@@ -24,11 +24,11 @@
           RowDefinitions="Auto, Auto">
       <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">Click 1 Position</TextBlock>
       <TextBox Grid.Row="0" Grid.Column="1" Margin="5" Text="0"/>
-      <Button Grid.Row="0" Grid.Column="2" Margin="5">Get Position</Button>
+      <Button Grid.Row="0" Grid.Column="2" Margin="5" Click="Get_Position">Get Position</Button>
       <TextBlock Grid.Row="1" Grid.Column="0" Margin="10">Click 2 Position</TextBlock>
       <TextBox Grid.Row="1" Grid.Column="1" Margin="5" Text="0"/>
-      <Button Grid.Row="1" Grid.Column="2" Margin="5">Get Position</Button>
+      <Button Grid.Row="1" Grid.Column="2" Margin="5" Click="Get_Position">Get Position</Button>
     </Grid>
-    <Button HorizontalAlignment="Center">Start</Button>
+    <Button HorizontalAlignment="Center" Click="Start_Click">Start</Button>
   </StackPanel>
 </Window>
