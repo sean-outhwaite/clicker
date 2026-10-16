@@ -21,12 +21,11 @@ indent_size = 2
 
 # C# files
 [*.cs]
-indent_size = 2
-
+end_of_line = lf
 #### Core EditorConfig Options ####
 
 # Indentation and spacing
-indent_size = 4
+indent_size = 2
 tab_width = 4
 
 # New line preferences
