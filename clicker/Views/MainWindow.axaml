@@ -3,34 +3,59 @@
         xmlns:vm="using:clicker.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="200"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="clicker.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="clicker"
-        Width="500" Height="200">
+        SizeToContent="WidthAndHeight"
+        Padding="16"
+        TransparencyLevelHint="Mica"
+        Background="Transparent"
+        FontFamily="fonts:Inter#Inter">
 
   <Design.DataContext>
     <!-- This only sets the DataContext for the previewer in an IDE,
     to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
     <vm:MainViewModel />
   </Design.DataContext>
-  <StackPanel>
-    <Border Margin="5" CornerRadius="10" Background="LightBlue">
+
+  <Window.Styles>
+    <Style Selector="Grid.rows > :is(Control)">
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+  </Window.Styles>
+
+  <StackPanel Spacing="5">
+    <Border Margin="5" CornerRadius="10" Background="#B691E4">
       <TextBlock Margin="5" FontSize="24" HorizontalAlignment="Center" Text="Clicker"></TextBlock>
     </Border>
-    <Grid Margin = "5"
-          ColumnDefinitions="120,100,120,130"
-          RowDefinitions="Auto, Auto">
-      <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">Click 1 Position</TextBlock>
-      <TextBox Grid.Row="0" Grid.Column="1" Margin="5" Text="0" Name="Click1Position" />
-      <Button Grid.Row="0" Grid.Column="2" Margin="5" Click="Get_Position" Name="GetClick1Position">Get Position</Button>
-      <NumericUpDown Grid.Row="0" Grid.Column="3" Margin="5" Value="1" Minimum="1" Maximum="20" Name="Click1Count" />
-      <TextBlock Grid.Row="1" Grid.Column="0" Margin="10">Click 2 Position</TextBlock>
-      <TextBox Grid.Row="1" Grid.Column="1" Margin="5" Text="0" Name="Click2Position"/>
-      <Button Grid.Row="1" Grid.Column="2" Margin="5" Click="Get_Position" Name="GetClick2Position">Get Position</Button>
-      <NumericUpDown Grid.Row="1" Grid.Column="3" Margin="5" Value="1" Minimum="1" Maximum="20" Name="Click2Count" />
-    </Grid>
-    <Button HorizontalAlignment="Center" Click="Start_Click">Start</Button>
+    <StackPanel Grid.IsSharedSizeScope="True" Spacing="5">
+      <Border CornerRadius="8" Padding="10" Background="#709FB7C5">
+        <Grid
+          Classes="rows"
+          RowSpacing="15" ColumnSpacing="5"
+          ColumnDefinitions="Auto,*,Auto,Auto"
+          RowDefinitions="Auto">
+          <TextBlock Grid.Row="0" Grid.Column="0" >Click 1</TextBlock>
+          <TextBox Grid.Row="0" Grid.Column="1"  PlaceholderText="x,y" Name="Click1Position" />
+          <Button Grid.Row="0" Grid.Column="2"  Click="Get_Position" Name="GetClick1Position">Get Position</Button>
+          <NumericUpDown Grid.Row="0" Grid.Column="3"  Value="1" Minimum="1" Maximum="20" Name="Click1Count" />
+        </Grid>
+      </Border>
+      <Border CornerRadius="8" Padding="10" Background="#709FB7C5">
+        <Grid
+          Classes="rows"
+          RowSpacing="15" ColumnSpacing="5"
+          ColumnDefinitions="Auto,*,Auto,Auto"
+          RowDefinitions="Auto">
+          <TextBlock Grid.Row="0" Grid.Column="0" >Click 2</TextBlock>
+          <TextBox Grid.Row="0" Grid.Column="1"  PlaceholderText="x,y" Name="Click2Position"/>
+          <Button Grid.Row="0" Grid.Column="2"  Click="Get_Position" Name="GetClick2Position">Get Position</Button>
+          <NumericUpDown Grid.Row="0" Grid.Column="3" Value="1" Minimum="1" Maximum="20" Name="Click2Count" />
+        </Grid>
+      </Border>
+    </StackPanel>
+    <Button Classes="accent" HorizontalAlignment="Center" Click="Start_Click">Start</Button>
   </StackPanel>
 </Window>
