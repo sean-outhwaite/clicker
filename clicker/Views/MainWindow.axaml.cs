@@ -49,8 +49,7 @@ public partial class MainWindow : Window
       _keyboardHook = null;
       _cancellationTokenSource?.Dispose();
       _cancellationTokenSource = null;
-      simulator?.Dispose();
-      simulator = null;
+      simulator.Dispose();
     }
   }
 
@@ -100,9 +99,10 @@ public partial class MainWindow : Window
     {
       simulator.SimulateMouseMovement(x, y);
       simulator.SimulateMousePress(MouseButton.Button1);
-      await Task.Delay(30);
+      // No token on purpose, the release below should always run
+      await Task.Delay(Random.Shared.Next(20, 60));
       simulator.SimulateMouseRelease(MouseButton.Button1);
-      await Task.Delay(1000, token);
+      await Task.Delay(Random.Shared.Next(200, 1000), token);
     }
   }
 
