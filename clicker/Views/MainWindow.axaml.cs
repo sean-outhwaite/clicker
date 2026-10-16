@@ -4,23 +4,57 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using SharpHook;
 using SharpHook.Simulation;
+using System.Threading;
+using System.Threading.Tasks;
+using SharpHook.Data;
 namespace clicker.Views;
 
 public partial class MainWindow : Window
 {
   private EventLoopGlobalHook? _hook;
+
+  private EventLoopGlobalHook? _keyboardHook;
+  private EventSimulator? _simulator;
   private TextBox? _pendingTarget;
+  private CancellationTokenSource? _cancellationTokenSource;
   public MainWindow()
   {
     InitializeComponent();
   }
   private async void Start_Click(object? sender, RoutedEventArgs e)
   {
-    if (Click1Position.Text == null || Click2Position.Text == null) return;
-    var click1 = Array.ConvertAll(Click1Position.Text.Split(','), s => short.Parse(s));
-    var click2 = Array.ConvertAll(Click2Position.Text.Split(','), s => short.Parse(s));
-    var simulator = EventSimulator.Create("clicker");
-    simulator.SimulateMouseMovement(click1[0], click1[1]);
+    if (!TryParseCoordinates(Click1Position.Text, out var x1, out var y1) || !TryParseCoordinates(Click2Position.Text, out var x2, out var y2)) return;
+    _simulator = EventSimulator.Create("clicker");
+
+    _keyboardHook = new EventLoopGlobalHook();
+    _keyboardHook.KeyPressed += Stop_Click;
+    _ = _keyboardHook.RunAsync();
+
+    _cancellationTokenSource = new CancellationTokenSource();
+    try
+    {
+      while (!_cancellationTokenSource.Token.IsCancellationRequested)
+      {
+        _simulator.SimulateMouseMovement(x1, y1);
+        _simulator.SimulateMousePress(MouseButton.Button1);
+        _simulator.SimulateMouseRelease(MouseButton.Button1);
+        await Task.Delay(1000, _cancellationTokenSource.Token);
+        _simulator.SimulateMouseMovement(x2, y2);
+        _simulator.SimulateMousePress(MouseButton.Button1);
+        _simulator.SimulateMouseRelease(MouseButton.Button1);
+        await Task.Delay(1000, _cancellationTokenSource.Token);
+      }
+    }
+    catch (OperationCanceledException)
+    {
+      // Task was canceled, do nothing
+    }
+    finally
+    {
+      _cancellationTokenSource = null;
+      _keyboardHook?.Dispose();
+      _keyboardHook = null;
+    }
   }
 
   private void Get_Position(object? sender, RoutedEventArgs e)
@@ -34,6 +68,10 @@ public partial class MainWindow : Window
     _hook.RunAsync();
   }
 
+  private void Stop_Click(object? sender, KeyboardHookEventArgs e)
+  {
+    _cancellationTokenSource?.Cancel();
+  }
   private void OnMousePressed(object? sender, MouseHookEventArgs e)
   {
     if (_pendingTarget == null) return;
@@ -47,6 +85,16 @@ public partial class MainWindow : Window
   {
     _pendingTarget.Text = $"{e.Data.X},{e.Data.Y}";
   });
+  }
+
+  private static bool TryParseCoordinates(string? input, out short x, out short y)
+  {
+    x = 0;
+    y = 0;
+    if (string.IsNullOrWhiteSpace(input)) return false;
+    var parts = input.Split(',');
+    if (parts.Length != 2) return false;
+    return short.TryParse(parts[0], out x) && short.TryParse(parts[1], out y);
   }
 
 }
