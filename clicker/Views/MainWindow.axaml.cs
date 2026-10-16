@@ -27,6 +27,10 @@ public partial class MainWindow : Window
     if (!TryParseCoordinates(Click1Position.Text, out var x1, out var y1) || !TryParseCoordinates(Click2Position.Text, out var x2, out var y2)) return;
     var simulator = EventSimulator.Create("clicker");
 
+    var click1Count = (int)Click1Count.Value.GetValueOrDefault(1);
+    var click2Count = (int)Click2Count.Value.GetValueOrDefault(1);
+    if (click1Count < 1 || click2Count < 1) return;
+
     _keyboardHook = new EventLoopGlobalHook();
     _keyboardHook.KeyPressed += Stop_Click;
     _ = _keyboardHook.RunAsync();
@@ -36,8 +40,8 @@ public partial class MainWindow : Window
     {
       while (!_cancellationTokenSource.Token.IsCancellationRequested)
       {
-        await ClickAtAsync(simulator, x1, y1, (int)Click1Count.Value.GetValueOrDefault(1), _cancellationTokenSource.Token);
-        await ClickAtAsync(simulator, x2, y2, (int)Click2Count.Value.GetValueOrDefault(1), _cancellationTokenSource.Token);
+        await ClickAtAsync(simulator, x1, y1, click1Count, _cancellationTokenSource.Token);
+        await ClickAtAsync(simulator, x2, y2, click2Count, _cancellationTokenSource.Token);
       }
     }
     catch (OperationCanceledException)
