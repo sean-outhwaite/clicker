@@ -14,7 +14,6 @@ public partial class MainWindow : Window
   private EventLoopGlobalHook? _hook;
 
   private EventLoopGlobalHook? _keyboardHook;
-  private EventSimulator? _simulator;
   private TextBox? _pendingTarget;
   private CancellationTokenSource? _cancellationTokenSource;
   public MainWindow()
@@ -23,8 +22,9 @@ public partial class MainWindow : Window
   }
   private async void Start_Click(object? sender, RoutedEventArgs e)
   {
+    if (_cancellationTokenSource != null) return;
     if (!TryParseCoordinates(Click1Position.Text, out var x1, out var y1) || !TryParseCoordinates(Click2Position.Text, out var x2, out var y2)) return;
-    _simulator = EventSimulator.Create("clicker");
+    var simulator = EventSimulator.Create("clicker");
 
     _keyboardHook = new EventLoopGlobalHook();
     _keyboardHook.KeyPressed += Stop_Click;
@@ -35,14 +35,8 @@ public partial class MainWindow : Window
     {
       while (!_cancellationTokenSource.Token.IsCancellationRequested)
       {
-        _simulator.SimulateMouseMovement(x1, y1);
-        _simulator.SimulateMousePress(MouseButton.Button1);
-        _simulator.SimulateMouseRelease(MouseButton.Button1);
-        await Task.Delay(1000, _cancellationTokenSource.Token);
-        _simulator.SimulateMouseMovement(x2, y2);
-        _simulator.SimulateMousePress(MouseButton.Button1);
-        _simulator.SimulateMouseRelease(MouseButton.Button1);
-        await Task.Delay(1000, _cancellationTokenSource.Token);
+        await ClickAtAsync(simulator, x1, y1, 3, _cancellationTokenSource.Token);
+        await ClickAtAsync(simulator, x2, y2, 3, _cancellationTokenSource.Token);
       }
     }
     catch (OperationCanceledException)
@@ -51,9 +45,12 @@ public partial class MainWindow : Window
     }
     finally
     {
-      _cancellationTokenSource = null;
       _keyboardHook?.Dispose();
       _keyboardHook = null;
+      _cancellationTokenSource?.Dispose();
+      _cancellationTokenSource = null;
+      simulator?.Dispose();
+      simulator = null;
     }
   }
 
@@ -65,7 +62,7 @@ public partial class MainWindow : Window
     _pendingTarget = this.FindControl<TextBox>(textBox);
     _hook = new EventLoopGlobalHook();
     _hook.MousePressed += OnMousePressed;
-    _hook.RunAsync();
+    _ = _hook.RunAsync();
   }
 
   private void Stop_Click(object? sender, KeyboardHookEventArgs e)
@@ -95,6 +92,18 @@ public partial class MainWindow : Window
     var parts = input.Split(',');
     if (parts.Length != 2) return false;
     return short.TryParse(parts[0], out x) && short.TryParse(parts[1], out y);
+  }
+
+  private async Task ClickAtAsync(EventSimulator simulator, short x, short y, int times, CancellationToken token)
+  {
+    for (int i = 0; i < times; i++)
+    {
+      simulator.SimulateMouseMovement(x, y);
+      simulator.SimulateMousePress(MouseButton.Button1);
+      await Task.Delay(30);
+      simulator.SimulateMouseRelease(MouseButton.Button1);
+      await Task.Delay(1000, token);
+    }
   }
 
 }
