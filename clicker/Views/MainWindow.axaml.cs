@@ -12,7 +12,6 @@ namespace clicker.Views;
 public partial class MainWindow : Window
 {
   private EventLoopGlobalHook? _hook;
-
   private EventLoopGlobalHook? _keyboardHook;
   private TextBox? _pendingTarget;
   private CancellationTokenSource? _cancellationTokenSource;

@@ -19,7 +19,7 @@
     <Border Margin="5" CornerRadius="10" Background="LightBlue">
       <TextBlock Margin="5" FontSize="24" HorizontalAlignment="Center" Text="Clicker"></TextBlock>
     </Border>
-    <Grid ShowGridLines="True" Margin = "5"
+    <Grid Margin = "5"
           ColumnDefinitions="120,100,200"
           RowDefinitions="Auto, Auto">
       <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">Click 1 Position</TextBlock>
