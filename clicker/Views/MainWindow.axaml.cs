@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Threading;
 
 using SharpHook;
 using SharpHook.Data;
@@ -13,9 +12,7 @@ namespace clicker.Views;
 
 public partial class MainWindow : Window
 {
-  private EventLoopGlobalHook? _hook;
   private EventLoopGlobalHook? _keyboardHook;
-  private TextBox? _pendingTarget;
   private CancellationTokenSource? _cancellationTokenSource;
   public MainWindow()
   {
@@ -58,36 +55,10 @@ public partial class MainWindow : Window
     }
   }
 
-  private void Get_Position(object? sender, RoutedEventArgs e)
-  {
-    var button = (sender as Button)?.Name;
-    var textBox = button?.Remove(0, 3);
-    if (textBox == null) return;
-    _pendingTarget = this.FindControl<TextBox>(textBox);
-    _hook = new EventLoopGlobalHook();
-    _hook.MousePressed += OnMousePressed;
-    _ = _hook.RunAsync();
-  }
-
   private void Stop_Click(object? sender, KeyboardHookEventArgs e)
   {
     _cancellationTokenSource?.Cancel();
   }
-  private void OnMousePressed(object? sender, MouseHookEventArgs e)
-  {
-    if (_pendingTarget == null) return;
-
-    if (_hook == null) return;
-    _hook.MousePressed -= OnMousePressed;
-    _hook.Dispose();
-    _hook = null;
-
-    Dispatcher.UIThread.Post(() =>
-  {
-    _pendingTarget.Text = $"{e.Data.X},{e.Data.Y}";
-  });
-  }
-
 
   private async Task ClickAtAsync(EventSimulator simulator, short x, short y, int times, CancellationToken token)
   {
