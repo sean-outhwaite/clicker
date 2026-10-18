@@ -3,6 +3,7 @@
         xmlns:vm="using:clicker.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:v="using:clicker.Views"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="clicker.Views.MainWindow"
         x:DataType="vm:MainViewModel"
@@ -31,30 +32,8 @@
       <TextBlock Margin="5" FontSize="24" HorizontalAlignment="Center" Text="Clicker"></TextBlock>
     </Border>
     <StackPanel Grid.IsSharedSizeScope="True" Spacing="5">
-      <Border CornerRadius="8" Padding="10" Background="#709FB7C5">
-        <Grid
-          Classes="rows"
-          RowSpacing="15" ColumnSpacing="5"
-          ColumnDefinitions="Auto,*,Auto,Auto"
-          RowDefinitions="Auto">
-          <TextBlock Grid.Row="0" Grid.Column="0" >Click 1</TextBlock>
-          <TextBox Grid.Row="0" Grid.Column="1"  PlaceholderText="x,y" Name="Click1Position" />
-          <Button Grid.Row="0" Grid.Column="2"  Click="Get_Position" Name="GetClick1Position">Get Position</Button>
-          <NumericUpDown Grid.Row="0" Grid.Column="3"  Value="1" Minimum="1" Maximum="20" Name="Click1Count" />
-        </Grid>
-      </Border>
-      <Border CornerRadius="8" Padding="10" Background="#709FB7C5">
-        <Grid
-          Classes="rows"
-          RowSpacing="15" ColumnSpacing="5"
-          ColumnDefinitions="Auto,*,Auto,Auto"
-          RowDefinitions="Auto">
-          <TextBlock Grid.Row="0" Grid.Column="0" >Click 2</TextBlock>
-          <TextBox Grid.Row="0" Grid.Column="1"  PlaceholderText="x,y" Name="Click2Position"/>
-          <Button Grid.Row="0" Grid.Column="2"  Click="Get_Position" Name="GetClick2Position">Get Position</Button>
-          <NumericUpDown Grid.Row="0" Grid.Column="3" Value="1" Minimum="1" Maximum="20" Name="Click2Count" />
-        </Grid>
-      </Border>
+      <v:ClickRow Name="Row1" />
+      <v:ClickRow Name="Row2" />
     </StackPanel>
     <Button Classes="accent" HorizontalAlignment="Center" Click="Start_Click">Start</Button>
   </StackPanel>

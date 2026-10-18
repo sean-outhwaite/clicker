@@ -24,11 +24,11 @@ public partial class MainWindow : Window
   private async void Start_Click(object? sender, RoutedEventArgs e)
   {
     if (_cancellationTokenSource != null) return;
-    if (!TryParseCoordinates(Click1Position.Text, out var x1, out var y1) || !TryParseCoordinates(Click2Position.Text, out var x2, out var y2)) return;
+    if (Row1.Position is not { } p1 || Row2.Position is not { } p2) return;
     var simulator = EventSimulator.Create("clicker");
 
-    var click1Count = (int)Click1Count.Value.GetValueOrDefault(1);
-    var click2Count = (int)Click2Count.Value.GetValueOrDefault(1);
+    var click1Count = (int)Row1.ClickCount;
+    var click2Count = (int)Row2.ClickCount;
     if (click1Count < 1 || click2Count < 1) return;
 
     _keyboardHook = new EventLoopGlobalHook();
@@ -40,8 +40,8 @@ public partial class MainWindow : Window
     {
       while (!_cancellationTokenSource.Token.IsCancellationRequested)
       {
-        await ClickAtAsync(simulator, x1, y1, click1Count, _cancellationTokenSource.Token);
-        await ClickAtAsync(simulator, x2, y2, click2Count, _cancellationTokenSource.Token);
+        await ClickAtAsync(simulator, p1.X, p1.Y, click1Count, _cancellationTokenSource.Token);
+        await ClickAtAsync(simulator, p2.X, p2.Y, click2Count, _cancellationTokenSource.Token);
       }
     }
     catch (OperationCanceledException)
@@ -88,15 +88,6 @@ public partial class MainWindow : Window
   });
   }
 
-  private static bool TryParseCoordinates(string? input, out short x, out short y)
-  {
-    x = 0;
-    y = 0;
-    if (string.IsNullOrWhiteSpace(input)) return false;
-    var parts = input.Split(',');
-    if (parts.Length != 2) return false;
-    return short.TryParse(parts[0], out x) && short.TryParse(parts[1], out y);
-  }
 
   private async Task ClickAtAsync(EventSimulator simulator, short x, short y, int times, CancellationToken token)
   {
