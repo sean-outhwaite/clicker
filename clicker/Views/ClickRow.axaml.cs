@@ -9,6 +9,7 @@ namespace clicker.Views;
 
 public partial class ClickRow : UserControl
 {
+  private const string GetPositionText = "Get Position";
   private EventLoopGlobalHook? _hook;
   public ClickRow()
   {
@@ -32,6 +33,7 @@ public partial class ClickRow : UserControl
   private void Get_Position(object? sender, RoutedEventArgs e)
   {
     if (_hook != null) return;
+    GetClickPosition.Content = "Click anywhere...";
     _hook = new EventLoopGlobalHook();
     _hook.MousePressed += OnMousePressed;
     _ = _hook.RunAsync();
@@ -39,7 +41,6 @@ public partial class ClickRow : UserControl
 
   private void OnMousePressed(object? sender, MouseHookEventArgs e)
   {
-
 
     if (_hook == null) return;
     _hook.MousePressed -= OnMousePressed;
@@ -49,6 +50,7 @@ public partial class ClickRow : UserControl
     Dispatcher.UIThread.Post(() =>
   {
     PositionBox.Text = $"{e.Data.X},{e.Data.Y}";
+    GetClickPosition.Content = GetPositionText;
   });
   }
 
