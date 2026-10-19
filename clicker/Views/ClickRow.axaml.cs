@@ -30,27 +30,36 @@ public partial class ClickRow : UserControl
     return short.TryParse(parts[0], out x) && short.TryParse(parts[1], out y);
   }
 
-  private void Get_Position(object? sender, RoutedEventArgs e)
+  private async void Get_Position(object? sender, RoutedEventArgs e)
   {
     if (_hook != null) return;
     GetClickPosition.Content = "Click anywhere...";
     _hook = new EventLoopGlobalHook();
     _hook.MousePressed += OnMousePressed;
-    _ = _hook.RunAsync();
+    try
+    {
+      await _hook.RunAsync();
+    }
+    catch (HookException)
+    {
+
+    }
+    finally
+    {
+      _hook?.Dispose();
+      _hook = null;
+      GetClickPosition.Content = GetPositionText;
+    }
   }
 
   private void OnMousePressed(object? sender, MouseHookEventArgs e)
   {
-
     if (_hook == null) return;
-    _hook.MousePressed -= OnMousePressed;
     _hook.Dispose();
-    _hook = null;
 
     Dispatcher.UIThread.Post(() =>
   {
     PositionBox.Text = $"{e.Data.X},{e.Data.Y}";
-    GetClickPosition.Content = GetPositionText;
   });
   }
 
