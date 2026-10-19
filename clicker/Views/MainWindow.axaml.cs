@@ -23,7 +23,7 @@ public partial class MainWindow : Window
 
   private EventLoopGlobalHook? _stopHook;
   private CancellationTokenSource? _cancellationTokenSource;
-  private async void Start_Click(object? sender, RoutedEventArgs e)
+  private async void StartButton_Click(object? sender, RoutedEventArgs e)
   {
     if (_cancellationTokenSource != null)
     {
@@ -56,9 +56,9 @@ public partial class MainWindow : Window
     StartButton.Content = "Stop";
 
     _stopHook = new EventLoopGlobalHook();
-    _stopHook.MouseMoved += HandleMouseMoved;
-    _stopHook.MouseDragged += HandleMouseMoved;
-    _stopHook.KeyPressed += HandleKeyPressed;
+    _stopHook.MouseMoved += StopHook_MouseMoved;
+    _stopHook.MouseDragged += StopHook_MouseMoved;
+    _stopHook.KeyPressed += StopHook_KeyPressed;
     _ = _stopHook.RunAsync();
 
     _cancellationTokenSource = new CancellationTokenSource();
@@ -86,17 +86,17 @@ public partial class MainWindow : Window
     }
   }
 
-  private void HandleKeyPressed(object? sender, KeyboardHookEventArgs e)
+  private void StopHook_KeyPressed(object? sender, KeyboardHookEventArgs e)
   {
     Dispatcher.UIThread.Post(() => _cancellationTokenSource?.Cancel());
   }
 
-  private void HandleMouseMoved(object? sender, MouseHookEventArgs e)
+  private void StopHook_MouseMoved(object? sender, MouseHookEventArgs e)
   {
     if (!e.IsEventSimulated) Dispatcher.UIThread.Post(() => _cancellationTokenSource?.Cancel());
   }
 
-  private async Task ClickAtAsync(EventSimulator simulator, short x, short y, int times, CancellationToken token)
+  private static async Task ClickAtAsync(EventSimulator simulator, short x, short y, int times, CancellationToken token)
   {
     for (int i = 0; i < times; i++)
     {

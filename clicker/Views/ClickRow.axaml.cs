@@ -12,11 +12,11 @@ namespace clicker.Views;
 public partial class ClickRow : UserControl
 {
   private const string GetPositionText = "Get Position";
-  private EventLoopGlobalHook? _hook;
+  private EventLoopGlobalHook? _captureHook;
   public ClickRow()
   {
     InitializeComponent();
-    GetClickPosition.Content = GetPositionText;
+    GetPositionButton.Content = GetPositionText;
   }
   public event EventHandler<string>? StatusChanged;
 
@@ -39,16 +39,16 @@ public partial class ClickRow : UserControl
     return short.TryParse(parts[0], out x) && short.TryParse(parts[1], out y);
   }
 
-  private async void Get_Position(object? sender, RoutedEventArgs e)
+  private async void GetPositionButtonClick(object? sender, RoutedEventArgs e)
   {
-    if (_hook != null) return;
-    GetClickPosition.Content = "Tracking...";
-    _hook = new EventLoopGlobalHook();
-    _hook.MousePressed += OnMousePressed;
+    if (_captureHook != null) return;
+    GetPositionButton.Content = "Tracking...";
+    _captureHook = new EventLoopGlobalHook();
+    _captureHook.MousePressed += CaptureHook_MousePressed;
     StatusChanged?.Invoke(this, "Tracking cursor. Click anywhere to set the position");
     try
     {
-      await _hook.RunAsync();
+      await _captureHook.RunAsync();
       StatusChanged?.Invoke(this, "");
     }
     catch (HookException)
@@ -57,16 +57,16 @@ public partial class ClickRow : UserControl
     }
     finally
     {
-      _hook?.Dispose();
-      _hook = null;
-      GetClickPosition.Content = GetPositionText;
+      _captureHook?.Dispose();
+      _captureHook = null;
+      GetPositionButton.Content = GetPositionText;
     }
   }
 
-  private void OnMousePressed(object? sender, MouseHookEventArgs e)
+  private void CaptureHook_MousePressed(object? sender, MouseHookEventArgs e)
   {
-    if (_hook == null) return;
-    _hook.Dispose();
+    if (_captureHook == null) return;
+    _captureHook.Dispose();
 
     Dispatcher.UIThread.Post(() =>
   {
