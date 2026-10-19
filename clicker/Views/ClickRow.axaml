@@ -10,9 +10,9 @@
   <Border CornerRadius="8" Padding="10" Background="#709FB7C5">
     <Grid
       Classes="rows"
-      RowSpacing="15" ColumnSpacing="5"
+      ColumnSpacing="5"
       ColumnDefinitions="Auto,*,Auto,Auto"
-      RowDefinitions="Auto">
+      >
       <TextBlock Grid.Row="0" Grid.Column="0" Name="LabelText" ></TextBlock>
       <TextBox Grid.Row="0" Grid.Column="1"  PlaceholderText="x,y" Name="PositionBox" />
       <Button Grid.Row="0" Grid.Column="2"  Click="Get_Position" Name="GetClickPosition"></Button>
