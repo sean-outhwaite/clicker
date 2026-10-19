@@ -13,14 +13,16 @@ namespace clicker.Views;
 
 public partial class MainWindow : Window
 {
-  private EventLoopGlobalHook? _stopHook;
-  private CancellationTokenSource? _cancellationTokenSource;
+
   public MainWindow()
   {
     InitializeComponent();
     Row1.StatusChanged += OnRowStatusChanged;
     Row2.StatusChanged += OnRowStatusChanged;
   }
+
+  private EventLoopGlobalHook? _stopHook;
+  private CancellationTokenSource? _cancellationTokenSource;
   private async void Start_Click(object? sender, RoutedEventArgs e)
   {
     if (_cancellationTokenSource != null)

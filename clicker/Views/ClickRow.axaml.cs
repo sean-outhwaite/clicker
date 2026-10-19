@@ -1,8 +1,8 @@
+using System;
+
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
-
-using System;
 
 using SharpHook;
 
@@ -13,12 +13,12 @@ public partial class ClickRow : UserControl
 {
   private const string GetPositionText = "Get Position";
   private EventLoopGlobalHook? _hook;
-  public event EventHandler<string>? StatusChanged;
   public ClickRow()
   {
     InitializeComponent();
     GetClickPosition.Content = GetPositionText;
   }
+  public event EventHandler<string>? StatusChanged;
 
   public string? Label
   {
@@ -75,4 +75,3 @@ public partial class ClickRow : UserControl
   }
 
 }
-
