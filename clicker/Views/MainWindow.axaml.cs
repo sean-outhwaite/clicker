@@ -17,15 +17,22 @@ public partial class MainWindow : Window
   public MainWindow()
   {
     InitializeComponent();
+    Row1.StatusChanged += OnRowStatusChanged;
+    Row2.StatusChanged += OnRowStatusChanged;
   }
   private async void Start_Click(object? sender, RoutedEventArgs e)
   {
     if (_cancellationTokenSource != null) return;
-    if (Row1.Position is not { } p1 || Row2.Position is not { } p2) return;
+    if (Row1.Position is not { } p1 || Row2.Position is not { } p2)
+    {
+      StatusText.Text = "Please set the position for both clicks.";
+      return;
+    }
+
     var simulator = EventSimulator.Create("clicker");
 
-    var click1Count = (int)Row1.ClickCount;
-    var click2Count = (int)Row2.ClickCount;
+    var click1Count = Row1.ClickCount;
+    var click2Count = Row2.ClickCount;
     if (click1Count < 1 || click2Count < 1) return;
 
     _keyboardHook = new EventLoopGlobalHook();
@@ -33,6 +40,7 @@ public partial class MainWindow : Window
     _ = _keyboardHook.RunAsync();
 
     _cancellationTokenSource = new CancellationTokenSource();
+    StatusText.Text = "Clicking... Press any key to stop.";
     try
     {
       while (!_cancellationTokenSource.Token.IsCancellationRequested)
@@ -52,6 +60,7 @@ public partial class MainWindow : Window
       _cancellationTokenSource?.Dispose();
       _cancellationTokenSource = null;
       simulator.Dispose();
+      StatusText.Text = "";
     }
   }
 
@@ -73,4 +82,5 @@ public partial class MainWindow : Window
     }
   }
 
+  private void OnRowStatusChanged(object? sender, string message) => StatusText.Text = message;
 }

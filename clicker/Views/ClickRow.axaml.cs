@@ -2,6 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 
+using System;
+
 using SharpHook;
 
 
@@ -11,6 +13,7 @@ public partial class ClickRow : UserControl
 {
   private const string GetPositionText = "Get Position";
   private EventLoopGlobalHook? _hook;
+  public event EventHandler<string>? StatusChanged;
   public ClickRow()
   {
     InitializeComponent();
@@ -39,16 +42,18 @@ public partial class ClickRow : UserControl
   private async void Get_Position(object? sender, RoutedEventArgs e)
   {
     if (_hook != null) return;
-    GetClickPosition.Content = "Click anywhere...";
+    GetClickPosition.Content = "Tracking...";
     _hook = new EventLoopGlobalHook();
     _hook.MousePressed += OnMousePressed;
+    StatusChanged?.Invoke(this, "Tracking cursor. Click anywhere to set the position");
     try
     {
       await _hook.RunAsync();
+      StatusChanged?.Invoke(this, "");
     }
     catch (HookException)
     {
-
+      StatusChanged?.Invoke(this, "Failed to start mouse capture");
     }
     finally
     {
