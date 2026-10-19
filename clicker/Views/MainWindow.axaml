@@ -32,8 +32,8 @@
       <TextBlock Margin="5" FontSize="24" HorizontalAlignment="Center" Text="Clicker"></TextBlock>
     </Border>
     <StackPanel Grid.IsSharedSizeScope="True" Spacing="5">
-      <v:ClickRow Name="Row1" />
-      <v:ClickRow Name="Row2" />
+      <v:ClickRow Name="Row1" Label="Click 1" />
+      <v:ClickRow Name="Row2" Label="Click 2" />
     </StackPanel>
     <Button Classes="accent" HorizontalAlignment="Center" Click="Start_Click">Start</Button>
   </StackPanel>

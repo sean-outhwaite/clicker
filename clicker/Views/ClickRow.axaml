@@ -13,9 +13,9 @@
       RowSpacing="15" ColumnSpacing="5"
       ColumnDefinitions="Auto,*,Auto,Auto"
       RowDefinitions="Auto">
-      <TextBlock Grid.Row="0" Grid.Column="0" >Click 1</TextBlock>
+      <TextBlock Grid.Row="0" Grid.Column="0" Name="LabelText" ></TextBlock>
       <TextBox Grid.Row="0" Grid.Column="1"  PlaceholderText="x,y" Name="PositionBox" />
-      <Button Grid.Row="0" Grid.Column="2"  Click="Get_Position" Name="GetClickPosition">{GetPositionText}</Button>
+      <Button Grid.Row="0" Grid.Column="2"  Click="Get_Position" Name="GetClickPosition"></Button>
       <NumericUpDown Grid.Row="0" Grid.Column="3"  Value="1" Minimum="1" Maximum="20" Name="CountBox" />
     </Grid>
   </Border>

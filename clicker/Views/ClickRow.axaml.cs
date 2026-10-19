@@ -14,8 +14,14 @@ public partial class ClickRow : UserControl
   public ClickRow()
   {
     InitializeComponent();
+    GetClickPosition.Content = GetPositionText;
   }
 
+  public string? Label
+  {
+    get => LabelText.Text;
+    set => LabelText.Text = value;
+  }
   public int ClickCount => (int)CountBox.Value.GetValueOrDefault(1);
 
   public (short X, short Y)? Position => TryParseCoordinates(PositionBox.Text, out var x, out var y) ? (x, y) : null;
