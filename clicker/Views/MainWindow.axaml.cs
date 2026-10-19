@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 
 using SharpHook;
 using SharpHook.Data;
@@ -22,18 +23,26 @@ public partial class MainWindow : Window
   }
   private async void Start_Click(object? sender, RoutedEventArgs e)
   {
-    if (_cancellationTokenSource != null) return;
+    if (_cancellationTokenSource != null)
+    {
+      _cancellationTokenSource.Cancel();
+      return;
+    }
     if (Row1.Position is not { } p1 || Row2.Position is not { } p2)
     {
       StatusText.Text = "Please set the position for both clicks.";
       return;
     }
 
-    var simulator = EventSimulator.Create("clicker");
+    using var simulator = EventSimulator.Create("clicker");
 
     var click1Count = Row1.ClickCount;
     var click2Count = Row2.ClickCount;
-    if (click1Count < 1 || click2Count < 1) return;
+    if (click1Count < 1 || click2Count < 1)
+    {
+      StatusText.Text = "Must click at least once for each position.";
+      return;
+    }
 
     var result = simulator.SimulateMouseMovement(p1.X, p1.Y);
     if (result != UioHookResult.Success)
@@ -41,6 +50,8 @@ public partial class MainWindow : Window
       StatusText.Text = "Failed to move mouse, please check accessibility permissions in System Settings.";
       return;
     }
+
+    StartButton.Content = "Stop";
 
     _stopHook = new EventLoopGlobalHook();
     _stopHook.MouseMoved += HandleMouseMoved;
@@ -64,23 +75,23 @@ public partial class MainWindow : Window
     }
     finally
     {
+      StartButton.Content = "Start";
       _stopHook?.Dispose();
       _stopHook = null;
       _cancellationTokenSource?.Dispose();
       _cancellationTokenSource = null;
-      simulator.Dispose();
       StatusText.Text = "";
     }
   }
 
   private void HandleKeyPressed(object? sender, KeyboardHookEventArgs e)
   {
-    _cancellationTokenSource?.Cancel();
+    Dispatcher.UIThread.Post(() => _cancellationTokenSource?.Cancel());
   }
 
   private void HandleMouseMoved(object? sender, MouseHookEventArgs e)
   {
-    if (!e.IsEventSimulated) _cancellationTokenSource?.Cancel();
+    if (!e.IsEventSimulated) Dispatcher.UIThread.Post(() => _cancellationTokenSource?.Cancel());
   }
 
   private async Task ClickAtAsync(EventSimulator simulator, short x, short y, int times, CancellationToken token)

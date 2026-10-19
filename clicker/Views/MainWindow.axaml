@@ -35,7 +35,7 @@
       <v:ClickRow Name="Row1" Label="Click 1" />
       <v:ClickRow Name="Row2" Label="Click 2" />
     </StackPanel>
-    <Button Classes="accent" HorizontalAlignment="Center" Click="Start_Click">Start</Button>
+    <Button Classes="accent" HorizontalAlignment="Center" Name="StartButton" Click="Start_Click">Start</Button>
     <TextBlock MinHeight="20" TextWrapping="Wrap" Name="StatusText"></TextBlock>
   </StackPanel>
 </Window>
