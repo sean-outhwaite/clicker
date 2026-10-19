@@ -12,7 +12,7 @@ namespace clicker.Views;
 
 public partial class MainWindow : Window
 {
-  private EventLoopGlobalHook? _keyboardHook;
+  private EventLoopGlobalHook? _stopHook;
   private CancellationTokenSource? _cancellationTokenSource;
   public MainWindow()
   {
@@ -35,12 +35,21 @@ public partial class MainWindow : Window
     var click2Count = Row2.ClickCount;
     if (click1Count < 1 || click2Count < 1) return;
 
-    _keyboardHook = new EventLoopGlobalHook();
-    _keyboardHook.KeyPressed += Stop_Click;
-    _ = _keyboardHook.RunAsync();
+    var result = simulator.SimulateMouseMovement(p1.X, p1.Y);
+    if (result != UioHookResult.Success)
+    {
+      StatusText.Text = "Failed to move mouse, please check accessibility permissions in System Settings.";
+      return;
+    }
+
+    _stopHook = new EventLoopGlobalHook();
+    _stopHook.MouseMoved += HandleMouseMoved;
+    _stopHook.MouseDragged += HandleMouseMoved;
+    _stopHook.KeyPressed += HandleKeyPressed;
+    _ = _stopHook.RunAsync();
 
     _cancellationTokenSource = new CancellationTokenSource();
-    StatusText.Text = "Clicking... Press any key to stop.";
+    StatusText.Text = "Clicking... Press any key or move the cursor to stop.";
     try
     {
       while (!_cancellationTokenSource.Token.IsCancellationRequested)
@@ -55,8 +64,8 @@ public partial class MainWindow : Window
     }
     finally
     {
-      _keyboardHook?.Dispose();
-      _keyboardHook = null;
+      _stopHook?.Dispose();
+      _stopHook = null;
       _cancellationTokenSource?.Dispose();
       _cancellationTokenSource = null;
       simulator.Dispose();
@@ -64,9 +73,14 @@ public partial class MainWindow : Window
     }
   }
 
-  private void Stop_Click(object? sender, KeyboardHookEventArgs e)
+  private void HandleKeyPressed(object? sender, KeyboardHookEventArgs e)
   {
     _cancellationTokenSource?.Cancel();
+  }
+
+  private void HandleMouseMoved(object? sender, MouseHookEventArgs e)
+  {
+    if (!e.IsEventSimulated) _cancellationTokenSource?.Cancel();
   }
 
   private async Task ClickAtAsync(EventSimulator simulator, short x, short y, int times, CancellationToken token)
