@@ -13,16 +13,16 @@ namespace clicker.Views;
 
 public partial class MainWindow : Window
 {
+  private EventLoopGlobalHook? _stopHook;
+  private CancellationTokenSource? _cancellationTokenSource;
 
   public MainWindow()
   {
     InitializeComponent();
-    Row1.StatusChanged += OnRowStatusChanged;
-    Row2.StatusChanged += OnRowStatusChanged;
+    Row1.StatusChanged += Row_StatusChanged;
+    Row2.StatusChanged += Row_StatusChanged;
   }
 
-  private EventLoopGlobalHook? _stopHook;
-  private CancellationTokenSource? _cancellationTokenSource;
   private async void StartButton_Click(object? sender, RoutedEventArgs e)
   {
     if (_cancellationTokenSource != null)
@@ -32,7 +32,7 @@ public partial class MainWindow : Window
     }
     if (Row1.Position is not { } p1 || Row2.Position is not { } p2)
     {
-      StatusText.Text = "Please set the position for both clicks.";
+      SetStatus("Please set the position for both clicks.");
       return;
     }
 
@@ -42,14 +42,14 @@ public partial class MainWindow : Window
     var click2Count = Row2.ClickCount;
     if (click1Count < 1 || click2Count < 1)
     {
-      StatusText.Text = "Must click at least once for each position.";
+      SetStatus("Must click at least once for each position.");
       return;
     }
 
     var result = simulator.SimulateMouseMovement(p1.X, p1.Y);
     if (result != UioHookResult.Success)
     {
-      StatusText.Text = "Failed to move mouse, please check accessibility permissions in System Settings.";
+      SetStatus("Failed to move mouse, please check accessibility permissions in System Settings.");
       return;
     }
 
@@ -62,7 +62,7 @@ public partial class MainWindow : Window
     _ = _stopHook.RunAsync();
 
     _cancellationTokenSource = new CancellationTokenSource();
-    StatusText.Text = "Clicking... Press any key or move the cursor to stop.";
+    SetStatus("Clicking... Press any key or move the cursor to stop.");
     try
     {
       while (!_cancellationTokenSource.Token.IsCancellationRequested)
@@ -82,7 +82,7 @@ public partial class MainWindow : Window
       _stopHook = null;
       _cancellationTokenSource?.Dispose();
       _cancellationTokenSource = null;
-      StatusText.Text = "";
+      SetStatus("");
     }
   }
 
@@ -109,5 +109,10 @@ public partial class MainWindow : Window
     }
   }
 
-  private void OnRowStatusChanged(object? sender, string message) => StatusText.Text = message;
+  private void SetStatus(string message)
+  {
+    StatusText.Text = message;
+  }
+
+  private void Row_StatusChanged(object? sender, string message) => SetStatus(message);
 }
