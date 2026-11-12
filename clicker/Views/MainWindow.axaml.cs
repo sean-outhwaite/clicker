@@ -13,6 +13,9 @@ namespace clicker.Views;
 
 public partial class MainWindow : Window
 {
+  private const string StartText = "Start";
+  private const string StopText = "Stop";
+
   private EventLoopGlobalHook? _stopHook;
   private CancellationTokenSource? _cancellationTokenSource;
 
@@ -21,6 +24,7 @@ public partial class MainWindow : Window
     InitializeComponent();
     Row1.StatusChanged += Row_StatusChanged;
     Row2.StatusChanged += Row_StatusChanged;
+    SetRunning(false);
   }
 
   private async void StartButton_Click(object? sender, RoutedEventArgs e)
@@ -53,7 +57,7 @@ public partial class MainWindow : Window
       return;
     }
 
-    StartButton.Content = "Stop";
+    SetRunning(true);
 
     _stopHook = new EventLoopGlobalHook();
     _stopHook.MouseMoved += StopHook_MouseMoved;
@@ -77,7 +81,7 @@ public partial class MainWindow : Window
     }
     finally
     {
-      StartButton.Content = "Start";
+      SetRunning(false);
       _stopHook?.Dispose();
       _stopHook = null;
       _cancellationTokenSource?.Dispose();
@@ -112,6 +116,11 @@ public partial class MainWindow : Window
   private void SetStatus(string message)
   {
     StatusText.Text = message;
+  }
+
+  private void SetRunning(bool running)
+  {
+    StartButton.Content = running ? StopText : StartText;
   }
 
   private void Row_StatusChanged(object? sender, string message) => SetStatus(message);
